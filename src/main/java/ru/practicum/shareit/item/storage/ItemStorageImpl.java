@@ -27,7 +27,7 @@ public class ItemStorageImpl implements ItemStorage {
         final Long id = idGenerator.generateId();
         item.setId(id);
         items.put(id, item);
-        List<Item> userItemsList = userItems.computeIfAbsent(item.getOwner().getId(), k -> new ArrayList<>());
+        List<Item> userItemsList = userItems.computeIfAbsent(item.getOwnerId(), k -> new ArrayList<>());
         userItemsList.add(item);
         userItems.put(userId, userItemsList);
         return item;
@@ -70,8 +70,8 @@ public class ItemStorageImpl implements ItemStorage {
             return Collections.emptyList();
         }
         return items.values().stream()
-                .filter((item -> item.getName().toLowerCase().contains(text) ||
-                        item.getDescription().toLowerCase().contains(text.toLowerCase()) && item.isAvailable()))
+                .filter((item -> (item.getName().toLowerCase().contains(text.toLowerCase()) ||
+                        item.getDescription().toLowerCase().contains(text.toLowerCase())) && item.isAvailable()))
                 .collect(Collectors.toList());
     }
 }

@@ -3,14 +3,13 @@ package ru.practicum.shareit.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserUpdateDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.List;
-
-import static ru.practicum.shareit.user.mapper.UserMapper.INSTANCE;
 
 @Service
 @RequiredArgsConstructor
@@ -20,31 +19,31 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto addUser(final UserDto userDto) {
-        final User user = INSTANCE.toModel(userDto);
+        final User user = UserMapper.INSTANCE.toModel(userDto);
         final User addedUser = userStorage.save(user);
         log.info("Добавление нового пользователя: {}.", addedUser);
-        return INSTANCE.toDto(addedUser);
+        return UserMapper.INSTANCE.toDto(addedUser);
     }
 
     @Override
     public UserDto updateUser(final long userId, final UserUpdateDto userUpdateDto) {
         final User updatedUserFromDb = userStorage.update(userId, userUpdateDto);
         log.info("Обновление пользователя с id '{}': {}.", userId, updatedUserFromDb);
-        return INSTANCE.toDto(updatedUserFromDb);
+        return UserMapper.INSTANCE.toDto(updatedUserFromDb);
     }
 
     @Override
     public UserDto findUserById(final long userId) {
         final User user = userStorage.findById(userId);
         log.info("Получение пользователя с id '{}.", userId);
-        return INSTANCE.toDto(user);
+        return UserMapper.INSTANCE.toDto(user);
     }
 
     @Override
     public List<UserDto> findAllUsers() {
         final List<User> users = userStorage.findAll();
         log.info("Получение списка всех пользователей.");
-        return INSTANCE.toDtoList(users);
+        return UserMapper.INSTANCE.toDtoList(users);
     }
 
     @Override
