@@ -1,5 +1,6 @@
 package ru.practicum.shareit.shared;
 
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
