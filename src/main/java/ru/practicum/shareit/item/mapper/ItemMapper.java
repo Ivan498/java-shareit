@@ -16,6 +16,4 @@ public interface ItemMapper {
     Item toModel(ItemDto itemDto);
 
     List<ItemDto> toDtoList(List<Item> itemList);
-
-    List<Item> toModelList(List<ItemDto> itemDtoList);
 }
