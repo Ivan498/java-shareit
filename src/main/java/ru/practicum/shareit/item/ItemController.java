@@ -22,13 +22,13 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") long userId,
-                              @PathVariable long itemId,
+                              @PathVariable("itemId") long itemId,
                               @RequestBody ItemUpdateDto itemUpdateDto) {
         return itemService.updateItem(userId, itemId, itemUpdateDto);
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long itemId) {
+    public ItemDto getItemById(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable("itemId") long itemId) {
         return itemService.findItemById(itemId);
     }
 
