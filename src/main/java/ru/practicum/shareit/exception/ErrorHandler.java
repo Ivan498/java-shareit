@@ -19,7 +19,7 @@ public class ErrorHandler {
     public ErrorResponse handleUserNotFoundException(NotFoundException e) {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.getErrors().put("errorMessage", e.getLocalizedMessage());
-        log.error(e.getLocalizedMessage());
+        log.error(e.getLocalizedMessage(), e);
         return errorResponse;
     }
 
@@ -28,7 +28,7 @@ public class ErrorHandler {
     public ErrorResponse handleEmailAlreadyExistsException(EmailAlreadyExists e) {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.getErrors().put("errorMessage", e.getLocalizedMessage());
-        log.error(e.getLocalizedMessage());
+        log.error(e.getLocalizedMessage(), e);
         return errorResponse;
     }
 
@@ -41,7 +41,7 @@ public class ErrorHandler {
             exceptions.put(error.getField(), error.getDefaultMessage());
             log.error("Поле {} не прошло валидацию. Причина: {}.", error.getField(), error.getDefaultMessage());
         }
-
+        log.error("Ошибка валидации", e);
         return errorResponse;
     }
 
@@ -50,7 +50,7 @@ public class ErrorHandler {
     public ErrorResponse handleAllException(Exception e) {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.getErrors().put("errorMessage", e.getLocalizedMessage());
-        log.error(e.getLocalizedMessage());
+        log.error(e.getLocalizedMessage(), e);
         return errorResponse;
     }
 }
