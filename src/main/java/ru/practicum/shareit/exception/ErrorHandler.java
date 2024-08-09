@@ -14,43 +14,43 @@ import java.util.Map;
 @Slf4j
 public class ErrorHandler {
 
-    @ExceptionHandler
+    @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleUserNotFoundException(NotFoundException e) {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.getErrors().put("errorMessage", e.getLocalizedMessage());
-        log.error(e.getLocalizedMessage(), e);
+        log.error("NotFoundException: {}", e.getLocalizedMessage(), e);
         return errorResponse;
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(EmailAlreadyExists.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleEmailAlreadyExistsException(EmailAlreadyExists e) {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.getErrors().put("errorMessage", e.getLocalizedMessage());
-        log.error(e.getLocalizedMessage(), e);
+        log.error("EmailAlreadyExists: {}", e.getLocalizedMessage(), e);
         return errorResponse;
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleInvalidException(MethodArgumentNotValidException e) {
         ErrorResponse errorResponse = new ErrorResponse();
         Map<String, String> exceptions = errorResponse.getErrors();
         for (FieldError error : e.getBindingResult().getFieldErrors()) {
             exceptions.put(error.getField(), error.getDefaultMessage());
-            log.error("Поле {} не прошло валидацию. Причина: {}.", error.getField(), error.getDefaultMessage());
+            log.error("Поле '{}' не прошло валидацию. Причина: {}.", error.getField(), error.getDefaultMessage());
         }
-        log.error("Ошибка валидации", e);
+        log.error("Ошибка валидации: {}", e.getLocalizedMessage(), e);
         return errorResponse;
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleAllException(Exception e) {
         ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.getErrors().put("errorMessage", e.getLocalizedMessage());
-        log.error(e.getLocalizedMessage(), e);
+        errorResponse.getErrors().put("errorMessage", "Произошла непредвиденная ошибка.");
+        log.error("Необработанное исключение: {}", e.getLocalizedMessage(), e);
         return errorResponse;
     }
 }

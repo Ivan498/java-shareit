@@ -39,6 +39,7 @@ public class ItemServiceImpl implements ItemService {
         if (item.getOwnerId() != userId) {
             throw new NotFoundException("У пользователя с id '" + userId + "' не найдена вещь с id '" + itemId + "'.");
         }
+
         Item updatedItem = itemStorage.update(itemId, itemUpdateDto);
         return ItemMapper.INSTANCE.toDto(updatedItem);
     }
