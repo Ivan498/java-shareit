@@ -7,17 +7,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ItemDto {
-    private long id;
-    @NotBlank(message = "Название вещи не может быть пустым.")
+public class ItemUpdateDto {
+    @NotBlank(message = "Название не может быть пустым.")
     private String name;
-    @NotBlank(message = "Описание вещи не может быть пустым.")
     private String description;
-    @NotNull(message = "Доступность вещи не может быть пустым.")
+    @NotNull(message = "Не указан статус доступности.")
     private Boolean available;
 }
-
