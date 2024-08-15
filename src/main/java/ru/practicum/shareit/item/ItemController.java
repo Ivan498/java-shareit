@@ -51,16 +51,14 @@ public class ItemController {
         return itemService.addCommentToItem(userId, itemId, commentDto);
     }
 
-    @GetMapping("/{itemId}")
+    @GetMapping("comments/{itemId}")
     public List<CommentDto> getCommentsByItemId(@RequestHeader("X-Sharer-User-Id") long userId,
                                                 @PathVariable Long itemId) {
-        List<CommentDto> comments = itemService.getCommentsByItemId(itemId);
-        return comments;
+        return itemService.getCommentsByItemId(itemId);
     }
 
-    @GetMapping
+    @GetMapping("comments")
     public List<CommentDto> getCommentsByUserId(@RequestHeader("X-Sharer-User-Id") long userId) {
-        List<CommentDto> comments = itemService.getCommentsByUserId(userId);
-        return comments;
+        return itemService.getCommentsByUserId(userId);
     }
 }

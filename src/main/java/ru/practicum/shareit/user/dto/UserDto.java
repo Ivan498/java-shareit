@@ -20,6 +20,6 @@ public class UserDto {
     @NotBlank(message = "Имя пользователя не может быть пустым.")
     private String name;
     @NotBlank(message = "Должен быть обязательно указан email.")
-    @Email(message = "Некорректный формат электронной почты.")
+    @Email(message = "Некорректный формат электронной почты.", regexp = "^[A-Z0-9+_.-]+@[A-Z0-9.-]+$")
     private String email;
 }

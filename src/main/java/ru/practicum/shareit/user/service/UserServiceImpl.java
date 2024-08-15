@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.exception.IncorrectEmailFormatException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
@@ -13,20 +14,28 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository repository;
+    private static final UserMapper userMapper = UserMapper.INSTANCE;
 
     @Override
     @Transactional
     public UserDto addUser(final UserDto userDto) {
-        final User user = UserMapper.INSTANCE.toModel(userDto);
+        if (userDto.getEmail() != null) {
+            Pattern pattern = Pattern.compile("^[A-Z0-9+_.-]+@[A-Z0-9.-]+$");
+            if (!pattern.matcher(userDto.getEmail()).matches()) {
+                throw new IncorrectEmailFormatException("Некорректный формат электронной почты.");
+            }
+        }
+        final User user = userMapper.toModel(userDto);
         final User addedUser = repository.save(user);
         log.info("Добавление нового пользователя: {}.", addedUser);
-        return UserMapper.INSTANCE.toDto(addedUser);
+        return userMapper.toDto(addedUser);
     }
 
     @Override
@@ -39,7 +48,7 @@ public class UserServiceImpl implements UserService {
         foundUser.setEmail(Optional.ofNullable(userUpdateDto.getEmail())
                 .orElse(foundUser.getEmail()));
         log.info("Обновление пользователя с id '{}': {}.", userId, foundUser);
-        return UserMapper.INSTANCE.toDto(foundUser);
+        return userMapper.toDto(foundUser);
     }
 
     @Override
@@ -48,7 +57,7 @@ public class UserServiceImpl implements UserService {
         final User user = repository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id '" + userId + "' не найден."));
         log.info("Получение пользователя с id '{}.", userId);
-        return UserMapper.INSTANCE.toDto(user);
+        return userMapper.toDto(user);
     }
 
     @Override
@@ -56,7 +65,7 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> findAllUsers() {
         final List<User> users = repository.findAll();
         log.info("Получение списка всех пользователей.");
-        return UserMapper.INSTANCE.toDtoList(users);
+        return userMapper.toDtoList(users);
     }
 
     @Override

@@ -25,6 +25,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,18 +35,19 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
-    private final CommentMapper commentMapper;
+    private static final CommentMapper commentMapper = CommentMapper.INSTANCE;
+    private static final ItemMapper itemMapper = ItemMapper.INSTANCE;
 
     @Override
     @Transactional
     public ItemDto addItem(long userId, ItemDto itemDto) {
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id '" + userId + "' не найден."));
-        Item item = ItemMapper.INSTANCE.toModel(itemDto);
+        Item item = itemMapper.toModel(itemDto);
         item.setOwner(owner);
         Item addedItem = itemRepository.save(item);
         log.info("Пользователь с id '{}' добавил новую вещь: {}.", userId, addedItem);
-        return ItemMapper.INSTANCE.toDto(addedItem);
+        return itemMapper.toDto(addedItem);
     }
 
     @Override
@@ -63,7 +65,7 @@ public class ItemServiceImpl implements ItemService {
         item.setAvailable(Optional.ofNullable(itemUpdateDto.getAvailable())
                 .orElse(item.getAvailable()));
 
-        return ItemMapper.INSTANCE.toDto(item);
+        return itemMapper.toDto(item);
     }
 
     @Override
@@ -72,7 +74,7 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Вещь с id '" + itemId + "' не найдена."));
         log.info("Получение вещи с id '{}': {}.", itemId, item);
-        return ItemMapper.INSTANCE.toDto(item);
+        return itemMapper.toDto(item);
     }
 
     @Override
@@ -82,7 +84,7 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new NotFoundException("Пользователь с id '" + userId + "' не найден."));
         List<Item> items = itemRepository.findAllByOwner(owner);
         log.info("Получение всех вещей пользователя с id '{}'.", userId);
-        return ItemMapper.INSTANCE.toDtoList(items);
+        return itemMapper.toDtoList(items);
     }
 
     @Override
@@ -91,7 +93,7 @@ public class ItemServiceImpl implements ItemService {
         List<Item> searchResult = itemRepository.findAllByNameIsLikeIgnoreCaseAndAvailableIsTrueOrDescriptionIsLikeIgnoreCaseAndAvailableIsTrue(
                 text, text);
         log.info("Поиск вещей по запросу: {}.", text);
-        return ItemMapper.INSTANCE.toDtoList(searchResult);
+        return itemMapper.toDtoList(searchResult);
     }
 
     @Override
@@ -123,8 +125,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<CommentDto> getCommentsByUserId(Long userId) {
-        List<Long> itemId = userRepository.findItemIdsByUserId(userId);
-        List<Comment> comments = commentRepository.findByItemId(itemId);
+        User owner = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id '" + userId + "' не найден."));
+        List<Long> itemId = itemRepository.findAllByOwner(owner)
+                .stream()
+                .map(Item::getId)
+                .collect(Collectors.toList());
+        List<Comment> comments = commentRepository.findByItemIdIn(itemId);
         return commentMapper.toDtoList(comments);
     }
 

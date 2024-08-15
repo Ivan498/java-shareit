@@ -32,6 +32,15 @@ public class ErrorHandler {
         return errorResponse;
     }
 
+    @ExceptionHandler(IncorrectEmailFormatException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleIncorrectEmailFormatException(IncorrectEmailFormatException e) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.getErrors().put("errorMessage", e.getLocalizedMessage());
+        log.error("IncorrectEmailFormat: {}", e.getLocalizedMessage(), e);
+        return errorResponse;
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleInvalidException(MethodArgumentNotValidException e) {
