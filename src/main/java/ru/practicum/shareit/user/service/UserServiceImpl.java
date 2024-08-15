@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.exception.IncorrectEmailFormatException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
@@ -14,7 +13,6 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -26,12 +24,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto addUser(final UserDto userDto) {
-        if (userDto.getEmail() != null) {
-            Pattern pattern = Pattern.compile("^[A-Z0-9+_.-]+@[A-Z0-9.-]+$");
-            if (!pattern.matcher(userDto.getEmail()).matches()) {
-                throw new IncorrectEmailFormatException("Некорректный формат электронной почты.");
-            }
-        }
         final User user = userMapper.toModel(userDto);
         final User addedUser = repository.save(user);
         log.info("Добавление нового пользователя: {}.", addedUser);

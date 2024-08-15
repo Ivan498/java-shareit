@@ -8,7 +8,7 @@ import ru.practicum.shareit.item.model.Comment;
 
 import java.util.List;
 
-@Mapper()
+@Mapper
 public interface CommentMapper {
     CommentMapper INSTANCE = Mappers.getMapper(CommentMapper.class);
 

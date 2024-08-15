@@ -38,4 +38,8 @@ public class Item {
     @OneToMany(mappedBy = "item", orphanRemoval = true)
     @ToString.Exclude
     private List<Booking> bookings;
+
+    @OneToMany(mappedBy = "item", orphanRemoval = true)
+    @ToString.Exclude
+    private List<Comment> comments;
 }

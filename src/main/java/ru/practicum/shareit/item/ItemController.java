@@ -46,14 +46,14 @@ public class ItemController {
 
     @PostMapping("/{itemId}/comment")
     public CommentDto addCommentToItem(@RequestHeader("X-Sharer-User-Id") long userId,
-                                       @PathVariable Long itemId,
+                                       @PathVariable("itemId") Long itemId,
                                        @RequestBody AddCommentDto commentDto) {
         return itemService.addCommentToItem(userId, itemId, commentDto);
     }
 
     @GetMapping("comments/{itemId}")
     public List<CommentDto> getCommentsByItemId(@RequestHeader("X-Sharer-User-Id") long userId,
-                                                @PathVariable Long itemId) {
+                                                @PathVariable("itemId") Long itemId) {
         return itemService.getCommentsByItemId(itemId);
     }
 

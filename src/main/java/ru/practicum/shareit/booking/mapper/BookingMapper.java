@@ -7,7 +7,7 @@ import ru.practicum.shareit.booking.model.Booking;
 
 import java.util.List;
 
-@Mapper()
+@Mapper
 public interface BookingMapper {
     BookingMapper INSTANCE = Mappers.getMapper(BookingMapper.class);
 

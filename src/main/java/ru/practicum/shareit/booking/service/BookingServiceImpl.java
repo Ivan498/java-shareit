@@ -59,10 +59,6 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException("Пользователь с id '" + userId + "' не найден."));
         Item item = itemRepository.findById(bookingDto.getItemId())
                 .orElseThrow(() -> new NotFoundException("Вещь с id '" + bookingDto.getItemId() + "' не найдена."));
-        if (!item.getOwner().getId().equals(userId)) {
-            throw new NotAuthorizedException("Пользователь с id '" + userId +
-                    "' не является владельцем вещи с id '" + item.getId() + "'.");
-        }
         checkItemAvailability(item);
         final Booking booking = Booking.builder()
                 .start(bookingDto.getStart())
@@ -79,7 +75,6 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingDto confirmationOrRejectionOfBookingRequest(final Long userId, final Long bookingId, final Boolean approved) {
-        findUser(userId);
         final Booking booking = findBooking(bookingId);
         final Item item = booking.getItem();
         if (!item.getOwner().getId().equals(userId)) {
@@ -102,10 +97,11 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto getBookingById(Long userId, Long bookingId) {
         findUser(userId);
         final Booking booking = findBooking(bookingId);
-        if (booking.getItem().getOwner().getId().equals(userId)) {
+        if (booking.getItem().getOwner().getId().equals(userId) ||
+                booking.getBooker().getId().equals(userId)) {
             return bookingMapper.toDto(booking);
         } else {
-            throw new NotAuthorizedException("У пользователя  нет прав для доступа к бронированию");
+            throw new NotAuthorizedException("Невозможно забронировать свою вещь.");
         }
     }
 

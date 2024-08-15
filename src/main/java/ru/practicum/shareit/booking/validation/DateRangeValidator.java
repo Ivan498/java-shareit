@@ -2,8 +2,8 @@ package ru.practicum.shareit.booking.validation;
 
 import ru.practicum.shareit.booking.dto.AddBookingDto;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class DateRangeValidator implements ConstraintValidator<ValidateDateRange, AddBookingDto> {
 

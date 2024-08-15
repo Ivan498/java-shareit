@@ -2,9 +2,11 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.enums.StatusEnum;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.ItemUnavailableException;
@@ -37,6 +39,7 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
     private static final CommentMapper commentMapper = CommentMapper.INSTANCE;
     private static final ItemMapper itemMapper = ItemMapper.INSTANCE;
+    private static final BookingMapper bookingMapper = BookingMapper.INSTANCE;
 
     @Override
     @Transactional
@@ -74,7 +77,21 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Вещь с id '" + itemId + "' не найдена."));
         log.info("Получение вещи с id '{}': {}.", itemId, item);
-        return itemMapper.toDto(item);
+        ItemDto itemDto = itemMapper.toDto(item);
+        itemDto.setNextBooking(bookingRepository.findAllByItemAndStatusAndStartIsAfter(item,
+                        StatusEnum.APPROVED, LocalDateTime.now(), Sort.by("start").ascending())
+                .stream()
+                .findFirst()
+                .map(bookingMapper::toDto)
+                .orElse(null));
+        itemDto.setLastBooking(bookingRepository.findAllByItemAndStatusAndEndIsBefore(item,
+                        StatusEnum.APPROVED, LocalDateTime.now(), Sort.by("end").descending())
+                .stream()
+                .skip(1)
+                .findFirst()
+                .map(bookingMapper::toDto)
+                .orElse(null));
+        return itemDto;
     }
 
     @Override
@@ -100,9 +117,11 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     public CommentDto addCommentToItem(Long userId, Long itemId, AddCommentDto commentDto) {
         final User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователь с id '" + userId + "' не найден."));;
+                .orElseThrow(() -> new NotFoundException("Пользователь с id '" + userId + "' не найден."));
+        ;
         final Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException("Вещь с id '" + itemId + "' не найдена."));;
+                .orElseThrow(() -> new NotFoundException("Вещь с id '" + itemId + "' не найдена."));
+        ;
         List<Booking> bookings = bookingRepository.findAllByItemIdAndBookerId(itemId, userId);
         checkIfUserCanAddComments(userId, itemId, bookings);
         Comment comment = Comment.builder()
