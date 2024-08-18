@@ -22,6 +22,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -72,23 +73,32 @@ public class BookingServiceImpl implements BookingService {
         return bookingMapper.toDto(savedBooking);
     }
 
-    @Override
     @Transactional
+    @Override
     public BookingDto confirmationOrRejectionOfBookingRequest(final Long userId, final Long bookingId, final Boolean approved) {
         final Booking booking = findBooking(bookingId);
         final Item item = booking.getItem();
+
         if (!item.getOwner().getId().equals(userId)) {
             throw new NotAuthorizedException("Пользователь с id '" + userId +
                     "' не является владельцем вещи с id '" + item.getId() + "'.");
         }
+
         if (!booking.getStatus().equals(StatusEnum.WAITING)) {
             throw new ItemUnavailableException("Вещь уже находится в аренде.");
         }
+
+        if (approved == null) {
+            throw new IllegalArgumentException("Параметр 'approved' не может быть null.");
+        }
         if (approved) {
             booking.setStatus(StatusEnum.APPROVED);
+            log.info("Бронирование с id '{}' успешно подтверждено владельцем с id '{}'.", bookingId, userId);
         } else {
             booking.setStatus(StatusEnum.REJECTED);
+            log.info("Бронирование с id '{}' отклонено владельцем с id '{}'.", bookingId, userId);
         }
+
         return bookingMapper.toDto(booking);
     }
 
@@ -117,7 +127,7 @@ public class BookingServiceImpl implements BookingService {
 
     private void checkItemAvailability(Item item) {
         if (!item.getAvailable()) {
-            throw new ItemUnavailableException("");
+            throw new ItemUnavailableException("Предмет недоступен");
         }
     }
 }
