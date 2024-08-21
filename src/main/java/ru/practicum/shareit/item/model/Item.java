@@ -1,18 +1,45 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.user.model.User;
 
+import java.util.List;
+
+@Entity
+@Table(name = "items")
+@Getter
+@Setter
+@ToString
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class Item {
-    private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "description", nullable = false)
     private String description;
-    private boolean available;
-    private Long ownerId;
+
+    @Column(name = "available", nullable = false)
+    private Boolean available;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id")
+    @ToString.Exclude
+    private User owner;
+
+    @OneToMany(mappedBy = "item", orphanRemoval = true)
+    @ToString.Exclude
+    private List<Booking> bookings;
+
+    @OneToMany(mappedBy = "item", orphanRemoval = true)
+    @ToString.Exclude
+    private List<Comment> comments;
 }

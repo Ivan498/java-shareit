@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.booking.dto.BookingDto;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -19,5 +22,8 @@ public class ItemDto {
     private String description;
     @NotNull(message = "Доступность вещи не может быть пустым.")
     private Boolean available;
+    private List<CommentDto> comments;
+    private BookingDto nextBooking;
+    private BookingDto lastBooking;
 }
 
