@@ -22,6 +22,7 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -38,6 +39,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository itemRequestRepository;
     private static final CommentMapper commentMapper = CommentMapper.INSTANCE;
     private static final ItemMapper itemMapper = ItemMapper.INSTANCE;
     private static final BookingMapper bookingMapper = BookingMapper.INSTANCE;
@@ -48,6 +50,11 @@ public class ItemServiceImpl implements ItemService {
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id '" + userId + "' не найден."));
         Item item = itemMapper.toModel(itemDto);
+        if (itemDto.getRequestId() != null) {
+            item.setItemRequest(itemRequestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(() -> new NotFoundException("Запрос с id '" + itemDto.getRequestId() +
+                            "' на вещь с id '" + item.getId() + "' не найден")));
+        }
         item.setOwner(owner);
         Item addedItem = itemRepository.save(item);
         log.info("Пользователь с id '{}' добавил новую вещь: {}.", userId, addedItem);

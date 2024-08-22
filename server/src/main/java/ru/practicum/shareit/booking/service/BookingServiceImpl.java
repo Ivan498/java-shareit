@@ -54,6 +54,30 @@ public class BookingServiceImpl implements BookingService {
         return bookingMapper.toDtoList(bookingList);
     }
 
+    @Override
+    @Transactional
+    public List<BookingDto> getAllBookingsFromUserByStatusAndItems(Long userId, GetBookingState state, Integer from, Integer size) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id '" + userId + "' не найден."));
+        if (user.getItems().isEmpty()) {
+            throw new NotFoundException("У пользователя с id '" + userId + "' не найдено ни одной вещи.");
+        }
+        Pageable pageable = PageRequest.of(from, size, Sort.by("start").descending());
+        List<Booking> bookingList = switch (state) {
+            case ALL -> bookingRepository.findAllByItemIn(user.getItems(), pageable);
+            case PAST -> bookingRepository.findAllByItemInAndEndIsBeforeAndStatus(user.getItems(), LocalDateTime.now(),
+                    StatusEnum.APPROVED, pageable);
+            case CURRENT -> bookingRepository.findAllByItemInAndStartIsBeforeAndEndIsAfterAndStatus(user.getItems(),
+                    LocalDateTime.now(), LocalDateTime.now(), StatusEnum.APPROVED, pageable);
+            case FUTURE ->
+                    bookingRepository.findAllByItemInAndStartIsAfterAndStatus(user.getItems(), LocalDateTime.now(),
+                            StatusEnum.APPROVED, pageable);
+            case WAITING -> bookingRepository.findAllByItemInAndStatus(user.getItems(), StatusEnum.WAITING, pageable);
+            case REJECTED -> bookingRepository.findAllByItemInAndStatus(user.getItems(), StatusEnum.REJECTED, pageable);
+        };
+        return bookingMapper.toDtoList(bookingList);
+    }
+
     @Transactional
     @Override
     public BookingDto addBooking(Long userId, AddBookingDto bookingDto) {

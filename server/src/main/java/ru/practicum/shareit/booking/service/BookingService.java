@@ -15,4 +15,6 @@ public interface BookingService {
     BookingDto getBookingById(Long userId, Long bookingId);
 
     BookingDto confirmationOrRejectionOfBookingRequest(final Long userId, final Long bookingId, final Boolean approved);
+
+    List<BookingDto> getAllBookingsFromUserByStatusAndItems(Long userId, GetBookingState state, Integer from, Integer size);
 }

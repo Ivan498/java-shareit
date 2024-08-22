@@ -16,8 +16,8 @@ import java.util.List;
 @Table(name = "item_requests")
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
+@NoArgsConstructor
 public class ItemRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +25,7 @@ public class ItemRequest {
 
     private String description;
 
-    private LocalDateTime created = LocalDateTime.now();
+    private LocalDateTime created;
 
     @OneToMany(mappedBy = "itemRequest")
     @ToString.Exclude

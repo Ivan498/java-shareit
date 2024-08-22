@@ -16,7 +16,7 @@
 		<version.lombok>1.18.34</version.lombok>
 		<version.mapstruct>1.4.2.Final</version.mapstruct>
 		<version.mapstruct-lombok>0.2.0</version.mapstruct-lombok>
-		<start-class>ru.practicum.shareit.ShareItApp</start-class>
+		<start-class>ru.practicum.shareit.ShareItServer</start-class>
 	</properties>
 
 	<artifactId>shareit-server</artifactId>
@@ -81,10 +81,6 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
-            <groupId>jakarta.validation</groupId>
-            <artifactId>jakarta.validation-api</artifactId>
-        </dependency>
     </dependencies>
 
 	<build>
@@ -99,7 +95,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<mainClass>ru.practicum.shareit.ShareItApp</mainClass>
+					<mainClass>ru.practicum.shareit.ShareItServer</mainClass>
 					<layout>JAR</layout>
 				</configuration>
 				<executions>
