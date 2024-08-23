@@ -46,6 +46,9 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> confirmationOrRejectionOfBookingRequest(long userId, Long bookingId, Boolean approved) {
+        if (approved == null) {
+            return ResponseEntity.badRequest().body("Parameter 'approved' is required.");
+        }
         return patch("/" + bookingId + "?approved=" + approved, userId);
     }
 

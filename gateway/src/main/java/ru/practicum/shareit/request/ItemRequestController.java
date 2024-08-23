@@ -27,11 +27,22 @@ public class ItemRequestController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Object> getOtherUsersItemRequests(@RequestHeader("X-Sharer-User-id") long userId,
-                                                            @RequestParam(defaultValue = "0") Long from,
-                                                            @RequestParam(defaultValue = "10") Integer size) {
+    public ResponseEntity<Object> getOtherUsersItemRequests(
+            @RequestHeader("X-Sharer-User-id") long userId,
+            @RequestParam(defaultValue = "0") Long from,
+            @RequestParam(defaultValue = "10") Integer size) {
+
+        if (from < 0) {
+            return ResponseEntity.badRequest().body("Parameter 'from' must be 0 or greater.");
+        }
+
+        if (size <= 0) {
+            return ResponseEntity.badRequest().body("Parameter 'size' must be greater than 0.");
+        }
+
         return itemRequestClient.getOtherUsersItemRequests(userId, from, size);
     }
+
 
     @GetMapping("/{requestId}")
     public ResponseEntity<Object> getItemRequestById(@RequestHeader("X-Sharer-User-id") long userId,
