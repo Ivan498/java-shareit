@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.validation.ValidateEmail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +16,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ValidateEmail
 @Builder
 public class User {
     @Id

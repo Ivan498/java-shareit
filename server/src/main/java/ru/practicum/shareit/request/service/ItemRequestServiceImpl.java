@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.page.OffsetPageRequest;
 import ru.practicum.shareit.request.dto.AddItemRequestDto;
@@ -19,12 +20,13 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ItemRequestServiceImpl implements ItemRequestService{
+public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRequestRepository itemRequestRepository;
     private final UserRepository userRepository;
-    private final ItemRequestMapper itemRequestMapper;
+    private final ItemRequestMapper itemRequestMapper = ItemRequestMapper.INSTANCE;
 
     @Override
+    @Transactional
     public ItemRequestDto addNewItemRequest(Long userId, AddItemRequestDto addItemRequestDto) {
         final User requester = findUser(userId);
         final ItemRequest itemRequest = itemRequestMapper.toModel(addItemRequestDto);
@@ -34,6 +36,7 @@ public class ItemRequestServiceImpl implements ItemRequestService{
         return itemRequestMapper.toDto(savedRequest);
     }
 
+    @Transactional
     @Override
     public List<ItemRequestDto> getAllItemRequestsFromUser(final Long userId) {
         findUser(userId);
@@ -42,6 +45,7 @@ public class ItemRequestServiceImpl implements ItemRequestService{
         return itemRequestMapper.toDtoList(requests);
     }
 
+    @Transactional
     @Override
     public List<ItemRequestDto> getAvailableItemRequests(final Long userId, final Long from, final Integer size) {
         findUser(userId);
@@ -51,6 +55,7 @@ public class ItemRequestServiceImpl implements ItemRequestService{
         return itemRequestMapper.toDtoList(requests.getContent());
     }
 
+    @Transactional
     @Override
     public ItemRequestDto getItemRequestById(final Long userId, final Long requestId) {
         findUser(userId);
